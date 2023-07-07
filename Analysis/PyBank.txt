@@ -1,0 +1,21 @@
+Financial Analysis
+
+-------------------------
+
+Total Months: 86
+
+Total: $ 22564198
+
+Average Change: $-8311.11
+
+Greatest Increase in Profits: Aug-16 ($1862002.0)
+
+Greatest Decrease in Profits: Feb-14 ($-1825558.0)
+
+Biggest Profit: Mar-13 ($1141840)
+
+Biggest Loss: Dec-10 ($-1194133)
+
+Profit/Loss Volatility: $624405.66
+
+Average Percentage Change: -77.2%
