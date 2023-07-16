@@ -1,76 +1,82 @@
 import os
 import csv
-import pandas as pd
 
-# Load CSV into a DataFrame
-df = pd.read_csv("../Resources/PyBankResource/budget_data.csv")
+# Set path for CSV File
+csvpath = 'Python-Challenge/Resources/PyBankResource/budget_data.csv'
 
-# Import CSV file to terminal
-#print(df.to_string())
+# Lists to hold output of each variable
+dates = []
+diff_profits_losses = []
 
-print("\n")
-print("Financial Analysis")
-print("\n-------------------------")
+# Counters for variables
+n_total = 0
+t_months = 0
+profits_losses  = 0
+changes_month = 0
 
-# Total Months
-total_months = df['Date'].count()
-print("\nTotal Months:", total_months)
+# First and second row varibales
+f_row = 0
+s_row = 0
 
-# Total Profit/Loss
-total_profit_loss = df['Profit/Losses'].sum()
-print("\nTotal: $" + str(total_profit_loss))
+# Read CSV file
+with open(csvpath, newline='') as csvfile:
+    csvreader = csv.reader(csvfile, delimiter=",")
+    
+    # Skipping first header row
+    next(csvreader)
 
-# Average Change in Profit/Loss
-df['Change'] = df['Profit/Losses'].diff()
-avg_change = df['Change'].mean()
-print("\nAverage Change: $" + str(round(avg_change, 2)))
+    # Loop through CSV file
+    for row in csvreader:
+        t_months +=1
 
-# Greatest Increase in Profits
-greatest_increase = df['Change'].max()
-greatest_increase_date = df.loc[df['Change'] == greatest_increase, 'Date'].iloc[0]
-print(f"\nGreatest Increase in Profits: {greatest_increase_date} (${str(round(greatest_increase))})")
+        # The net total of Profit/Losses
+        f_row = int(row[1])
+        n_total += int(row[1])
 
-# Greatest Decrease in Profits
-greatest_decrease = df['Change'].min()
-greatest_decrease_date = df.loc[df['Change'] == greatest_decrease, 'Date'].iloc[0]
-print(f"\nGreatest Decrease in Profits: {greatest_decrease_date} (${str(round(greatest_decrease))})")
+        # Loop through average changes in Profits/Losses
+        if (t_months == 1):
+            s_row = f_row
+        else:
+            changes_month = f_row - s_row
+            dates.append(row[0])
+            diff_profits_losses.append(changes_month)
+            s_row = f_row
 
-# Biggest Profit and Loss
-biggest_profit = df['Profit/Losses'].max()
-biggest_profit_date = df.loc[df['Profit/Losses'] == biggest_profit, 'Date'].iloc[0]
-print(f"\nBiggest Profit: {biggest_profit_date} (${str(biggest_profit)})")
+    # Calculate the average change
+    #a_change = round(sum(diff_profits_losses)/(n_total - 1), 2)
+    a_change = round(sum(diff_profits_losses)/len(diff_profits_losses), 2)
+        
+    # Finding the date with greatest increase
+    g_increase = max(diff_profits_losses)
+    i_date = dates[diff_profits_losses.index(g_increase)]
 
-biggest_loss = df['Profit/Losses'].min()
-biggest_loss_date = df.loc[df['Profit/Losses'] == biggest_loss, 'Date'].iloc[0]
-print(f"\nBiggest Loss: {biggest_loss_date} (${str(biggest_loss)})")
+    # Finding the date with greatest decrease
+    g_decrease = min(diff_profits_losses)
+    d_date = dates[diff_profits_losses.index(g_decrease)]
 
-# Volatility Analysis
-volatility = df['Profit/Losses'].std()
-print("\nProfit/Loss Volatility: $" + str(round(volatility, 2)))
 
-# Percentage Change
-df['Percentage Change'] = df['Profit/Losses'].pct_change()*100
-average_percentage_change = df['Percentage Change'].mean()
-print("\nAverage Percentage Change: " + str(round(average_percentage_change, 2)) + "%")
-print("\n")
+    print(f'\nFinancial Analysis')
+    print(f'\n---------------------')
+    print(f'\nTotal Months:', t_months)
+    print(f'\nTotal:  ${str(round(n_total))}')
+    print(f'\nAverage Change: ${str(a_change)}')
+    print(f'\nGreatest Increase in Profits: {i_date} (${str(round(g_increase))})')
+    print(f'\nGreatest Decrease in Profits: {d_date} (${str(round(g_decrease))})')
+    print('\n')
 
 
 # Export results as a text file
 file = open('PyBank.txt', 'w')
 
-s1 = str("Financial Analysis") + "\n"
-s2 = str("\n-------------------------") + "\n"
-s3 = str("\nTotal Months: ") + str(total_months) + "\n"
-s4 = str("\nTotal: $ ") + str(total_profit_loss) + "\n"
-s5 = str("\nAverage Change: $") + str(round(avg_change, 2)) + "\n"
-s6 = str(f"\nGreatest Increase in Profits: {greatest_increase_date} (${str(greatest_increase)})") + "\n"
-s7 = str(f"\nGreatest Decrease in Profits: {greatest_decrease_date} (${str(greatest_decrease)})") + "\n"
-s8 = str(f"\nBiggest Profit: {biggest_profit_date} (${str(biggest_profit)})") + "\n"
-s9 = str(f"\nBiggest Loss: {biggest_loss_date} (${str(biggest_loss)})") + "\n"
-s10 = str("\nProfit/Loss Volatility: $" + str(round(volatility, 2))) + "\n"
-s11 = str("\nAverage Percentage Change: " + str(round(average_percentage_change, 2)) + "%") + "\n"
+s1 = str(f'\nFinancial Analysis') + "\n"
+s2 = str(f'\n-------------------------') + "\n"
+s3 = str(f'\nTotal Months:' + str(t_months)) + "\n"
+s4 = str(f'\nTotal:  ${str(round(n_total))}') + "\n"
+s5 = str(f'\nAverage Change: ${str(a_change)}') + "\n"
+s6 = str(f'\nGreatest Increase in Profits: {i_date} (${str(round(g_increase))})') + "\n"
+s7 = str(f'\nGreatest Decrease in Profits: {d_date} (${str(round(g_decrease))})') + "\n"
 
-l1 = [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11]
+l1 = [s1, s2, s3, s4, s5, s6, s7]
 file.writelines(l1)
 file.close()
 

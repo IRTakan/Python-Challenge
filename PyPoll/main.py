@@ -1,57 +1,78 @@
 import os
 import csv
-import pandas as pd
 
-# Load CSV into a DataFrame
-df = pd.read_csv("../Resources/PyPollResource/election_data.csv")
+# Set path for CSV File
+csvpath = 'Python-Challenge/Resources/PyPollResource/election_data.csv'
 
-# Import CSV file to terminal
-#print(df.to_string())
+# Lists to hold output of each variable
+c_votes = {}
+percentage_c_votes = {}
+c_names = []
 
-# Total number of votes for each candidate
-#groupby_count1 = df.groupby(['Candidate'])['Candidate'].count()
-#print(groupby_count1)
+# Counter for variables
+t_votes = 0
+w_count = 0
 
-print('\n')
-print("Election Results")
-print("\n-------------------------")
+# Read CSV file
+with open(csvpath, newline ='') as csvfile:
+    csvreader = csv.reader(csvfile, delimiter= ',')
 
-# Total Votes
-total_votes = df['Candidate'].count()
-print("\nTotal Votes:", total_votes)
-print('\n-------------------------')
+    # Skipping first header row
+    csv_header = next(csvreader)
 
-# Voter's Total
-Charles_total = 85213
-Dianas_total = 272892
-Raymons_total  = 11606
+    for row in csvreader:
+        # Add to vote-counter
+        t_votes += 1 
 
-# Voter's Percenatge
-Charles_Percentage = (85213 / 369711) * 100
-Dianas_Percentage = (272892/ 369711) * 100
-Raymons_Percentage = (11606 / 369711) * 100
+        # Start loop to add candidate to the list
+        if row[2] in c_names:
+            c_votes[row[2]] +=1
+        else:
+            c_names.append(row[2])
+            c_votes[row[2]] = 1
 
-print(f'\nCharles Casper Stockham: {str(round(Charles_Percentage, 3))}% ({Charles_total})')
-print(f'\nDiana DeGette: {str(round(Dianas_Percentage, 3))}% ({Dianas_total})')
-print(f'\nRaymon Anthony Doane: {str(round(Raymons_Percentage, 3))}% ({Raymons_total})')
-print('\n-------------------------')
-print('\nWinner: Diana DeGette')
-print('\n-------------------------')
+        # Work out the percentage of votes for each candidate
+        for key, value in c_votes.items():
+            percentage_c_votes[key] = round((value/t_votes) * 100, 3)
+
+    #Pick the winner based off votes
+    winner = max(percentage_c_votes, key=percentage_c_votes.get)
+
+
+    # Print output into Terminal
+    print('\nElection Results')
+    print('\n---------------------')
+    print('\nTotal Vote: ', str(t_votes))
+    print('\n---------------------')
+
+    for key, value in c_votes.items():
+        print(f'\n{key} : {percentage_c_votes[key]}% ({c_votes[key]})')
+
+    print(f'\n---------------------')
+    print(f'\nWinner: {winner}')
+    print(f'\n---------------------')
 
 
 # Export results as a text file
-file = open('PyRoll.txt', 'w')
+file = open('PyPoll.txt', 'w')
 
-s1 = str("Election Results") + "\n"
-s2 = str("\n-------------------------") + "\n"
-s3 = str(f'\nTotal Votes: ') + str(total_votes) + "\n"
-s4 = str(f'\nCharles Casper Stockham: {str(round(Charles_Percentage, 3))}% ({Charles_total})') + "\n"
-s5 = str(f'\nDiana DeGette: {str(round(Dianas_Percentage, 3))}% ({Dianas_total})') + "\n"
-s6 = str(f'\nRaymon Anthony Doane: {str(round(Raymons_Percentage, 3))}% ({Raymons_total})') + "\n"
-s7 = str("\n-------------------------") + "\n"
-s8 = str('\nWinner: Diana DeGette') + "\n"
-s9 = str("\n-------------------------") + "\n"
+l1 = []
+s1 = str(f'\nElection Results') + "\n"
+s2 = str(f'\n---------------------') + "\n"
+s3 = str(f'\nTotal Vote: ' + str(t_votes)) + "\n"
+s4 = str(f'\n---------------------') + "\n"
+l1 = [s1, s2, s3, s4]
 
-l2 = [s1, s2, s3, s4, s5, s6, s7,s8, s9]
-file.writelines(l2)
+for key, value in c_votes.items():
+    l1.append((f'\n{key} : {percentage_c_votes[key]}% ({c_votes[key]})'))
+    l1.append((f'\n'))
+
+s5 = str(f'\n---------------------') + "\n"
+s6 = str(f'\nWinner: {winner}') + "\n"
+s7 = str(f'\n---------------------') + "\n"
+l1.append(s5)
+l1.append(s6)
+l1.append(s7)
+
+file.writelines(l1)
 file.close()
