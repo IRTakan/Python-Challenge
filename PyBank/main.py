@@ -43,7 +43,6 @@ with open(csvpath, newline='') as csvfile:
             s_row = f_row
 
     # Calculate the average change
-    #a_change = round(sum(diff_profits_losses)/(n_total - 1), 2)
     a_change = round(sum(diff_profits_losses)/len(diff_profits_losses), 2)
         
     # Finding the date with greatest increase
